@@ -24,7 +24,7 @@ export default function AlbumScreen() {
           <Text style={styles.backText}>‹  All albums</Text>
         </Pressable>
         <View style={styles.albumHero}>
-          {cover ? <Image source={cover} style={styles.cover} resizeMode="cover" /> : <View style={[styles.cover, styles.coverEmpty]}><Text style={styles.initial}>{album.title[0]}</Text></View>}
+          {cover ? <Image source={cover} style={styles.cover} resizeMode="contain" /> : <View style={[styles.cover, styles.coverEmpty]}><Text style={styles.initial}>{album.title[0]}</Text></View>}
           <View style={styles.albumCopy}>
             <Text style={styles.kicker}>ALBUM</Text>
             <Text style={styles.albumTitle}>{album.title}</Text>
@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
   back: { alignSelf: 'flex-start', paddingVertical: 12, paddingRight: 12 },
   backText: { color: colors.gold, fontSize: 14, fontWeight: '800' },
   albumHero: { alignItems: 'center', marginTop: 12, marginBottom: 28 },
-  cover: { width: 214, height: 214, borderRadius: 15, backgroundColor: colors.surfaceRaised },
+  cover: { width: 214, height: 214, borderRadius: 15, backgroundColor: '#121116' },
   coverEmpty: { alignItems: 'center', justifyContent: 'center', backgroundColor: colors.purple },
   initial: { color: colors.text, fontSize: 80, fontWeight: '900' },
   albumCopy: { alignItems: 'center', marginTop: 20, maxWidth: '100%' },

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import * as Linking from 'expo-linking';
 import type { CatalogTrack } from '../data/catalog';
 import { colors } from '../theme';
 
@@ -22,6 +23,15 @@ export function SongRow({
           <Text numberOfLines={1} style={styles.title}>{track.title}</Text>
           <Text numberOfLines={1} style={styles.album}>{track.albumTitle}</Text>
         </View>
+      </Pressable>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={`Search Spotify for ${track.title} by Bob Dylan`}
+        onPress={() => void Linking.openURL(`https://open.spotify.com/search/${encodeURIComponent(`${track.title} Bob Dylan`)}`)}
+        hitSlop={8}
+        style={({ pressed }) => [styles.spotifyButton, pressed && styles.pressed]}
+      >
+        <Text style={styles.spotifyIcon}>♫</Text>
       </Pressable>
       {onToggleFavorite ? (
         <Pressable
@@ -50,4 +60,6 @@ const styles = StyleSheet.create({
   heartButton: { width: 42, height: 46, justifyContent: 'center', alignItems: 'center' },
   heart: { color: colors.muted, fontSize: 25 },
   heartActive: { color: colors.orange },
+  spotifyButton: { width: 34, height: 34, borderRadius: 17, justifyContent: 'center', alignItems: 'center', backgroundColor: '#1DB954', marginRight: 4 },
+  spotifyIcon: { color: '#102016', fontSize: 19, fontWeight: '800', marginTop: -1 },
 });

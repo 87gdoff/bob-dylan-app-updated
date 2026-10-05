@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import React, { useMemo, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
 import { AlbumCard } from '../../components/AlbumCard';
 import { BrandHeader } from '../../components/BrandHeader';
 import { SongRow } from '../../components/SongRow';
@@ -11,7 +11,10 @@ import { Page } from '../../components/Page';
 
 export default function HomeScreen() {
   const [query, setQuery] = useState('');
+  const { width: screenWidth } = useWindowDimensions();
   const { isFavorite, toggleFavorite } = useFavorites();
+  const columns = screenWidth >= 760 ? 4 : screenWidth >= 520 ? 3 : 2;
+  const albumCardWidth = (screenWidth - pagePadding * 2 - 12 * (columns - 1)) / columns;
   const normalizedQuery = query.trim().toLocaleLowerCase();
   const matchingAlbums = useMemo(
     () => normalizedQuery ? albums.filter((album) => album.title.toLocaleLowerCase().includes(normalizedQuery)) : albums,
@@ -59,7 +62,7 @@ export default function HomeScreen() {
                 <SectionTitle title="ALBUMS" count={matchingAlbums.length} />
                 <View style={styles.grid}>
                   {matchingAlbums.map((album) => (
-                    <View key={album.id} style={styles.gridItem}>
+                    <View key={album.id} style={[styles.gridItem, { width: albumCardWidth }]}>
                       <AlbumCard album={album} onPress={() => openAlbum(album.id)} />
                     </View>
                   ))}
@@ -86,7 +89,7 @@ export default function HomeScreen() {
             </View>
             <View style={styles.grid}>
               {albums.map((album) => (
-                <View key={album.id} style={styles.gridItem}>
+                <View key={album.id} style={[styles.gridItem, { width: albumCardWidth }]}>
                   <AlbumCard album={album} onPress={() => openAlbum(album.id)} />
                 </View>
               ))}
@@ -121,7 +124,7 @@ const styles = StyleSheet.create({
   sectionTitle: { color: colors.text, fontSize: 13, fontWeight: '900', letterSpacing: 1.4 },
   sectionNote: { color: colors.muted, fontSize: 12 },
   resultTitleRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginTop: 3, marginBottom: 10 },
-  grid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' },
-  gridItem: { width: '48.3%' },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start', columnGap: 12 },
+  gridItem: { minWidth: 0 },
   emptySearch: { color: colors.muted, textAlign: 'center', paddingVertical: 40, lineHeight: 22 },
 });
