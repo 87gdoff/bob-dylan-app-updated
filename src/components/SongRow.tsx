@@ -1,37 +1,33 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import * as Linking from 'expo-linking';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { ListenButton } from './ListenButton';
 import type { CatalogTrack } from '../data/catalog';
-import { colors } from '../theme';
+import { useThemeColors } from '../theme';
 
 export function SongRow({
   track,
   onPress,
   favorite = false,
   onToggleFavorite,
+  showAlbum = true,
 }: {
   track: CatalogTrack;
   onPress: () => void;
   favorite?: boolean;
   onToggleFavorite?: () => void;
+  showAlbum?: boolean;
 }) {
+  const colors = useThemeColors();
+  const styles = createStyles(colors);
   return (
     <View style={styles.row}>
       <Pressable accessibilityRole="button" onPress={onPress} style={({ pressed }) => [styles.main, pressed && styles.pressed]}>
-        <View style={styles.number}><Text style={styles.numberText}>♪</Text></View>
+        <ListenButton track={track} />
         <View style={styles.copy}>
           <Text numberOfLines={1} style={styles.title}>{track.title}</Text>
-          <Text numberOfLines={1} style={styles.album}>{track.albumTitle}</Text>
+          {showAlbum ? <Text numberOfLines={1} style={styles.album}>{track.albumTitle}</Text> : null}
         </View>
-      </Pressable>
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel={`Search Spotify for ${track.title} by Bob Dylan`}
-        onPress={() => void Linking.openURL(`https://open.spotify.com/search/${encodeURIComponent(`${track.title} Bob Dylan`)}`)}
-        hitSlop={8}
-        style={({ pressed }) => [styles.spotifyButton, pressed && styles.pressed]}
-      >
-        <Text style={styles.spotifyIcon}>♫</Text>
       </Pressable>
       {onToggleFavorite ? (
         <Pressable
@@ -41,25 +37,19 @@ export function SongRow({
           hitSlop={10}
           style={styles.heartButton}
         >
-          <Text style={[styles.heart, favorite && styles.heartActive]}>{favorite ? '♥' : '♡'}</Text>
+          <FontAwesome name={favorite ? 'heart' : 'heart-o'} size={19} color={favorite ? colors.orange : colors.muted} />
         </Pressable>
       ) : null}
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ReturnType<typeof useThemeColors>) => StyleSheet.create({
   row: { minHeight: 66, flexDirection: 'row', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: colors.border },
   main: { flex: 1, minWidth: 0, flexDirection: 'row', alignItems: 'center', paddingVertical: 10 },
   pressed: { opacity: 0.7 },
-  number: { width: 36, height: 36, borderRadius: 12, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.surfaceRaised, marginRight: 12 },
-  numberText: { color: colors.gold, fontSize: 18 },
   copy: { flex: 1, minWidth: 0 },
   title: { color: colors.text, fontSize: 15, fontWeight: '700' },
   album: { color: colors.muted, fontSize: 12, marginTop: 4 },
   heartButton: { width: 42, height: 46, justifyContent: 'center', alignItems: 'center' },
-  heart: { color: colors.muted, fontSize: 25 },
-  heartActive: { color: colors.orange },
-  spotifyButton: { width: 34, height: 34, borderRadius: 17, justifyContent: 'center', alignItems: 'center', backgroundColor: '#1DB954', marginRight: 4 },
-  spotifyIcon: { color: '#102016', fontSize: 19, fontWeight: '800', marginTop: -1 },
 });

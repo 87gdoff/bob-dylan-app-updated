@@ -2,7 +2,7 @@ import React from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import type { Album } from "../data/catalog";
 import { getCover } from "../data/covers";
-import { colors } from "../theme";
+import { useThemeColors } from "../theme";
 
 export function AlbumCard({
   album,
@@ -11,7 +11,9 @@ export function AlbumCard({
   album: Album;
   onPress: () => void;
 }) {
-  const source = getCover(album.cover);
+  const colors = useThemeColors();
+  const styles = createStyles(colors);
+  const cover = getCover(album.cover);
   return (
     <Pressable
       accessibilityRole="button"
@@ -19,8 +21,8 @@ export function AlbumCard({
       style={({ pressed }) => [styles.card, pressed && styles.pressed]}
     >
       <View style={styles.coverFrame}>
-        {source ? (
-          <Image source={source} style={styles.cover} resizeMode="contain" />
+        {cover ? (
+          <Image source={cover} style={styles.cover} resizeMode="contain" />
         ) : (
           <View style={styles.coverFallback}>
             <Text style={styles.fallbackText}>{album.title.slice(0, 1)}</Text>
@@ -35,7 +37,7 @@ export function AlbumCard({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ReturnType<typeof useThemeColors>) => StyleSheet.create({
   card: {
     width: "100%",
     minWidth: 0,
@@ -48,7 +50,7 @@ const styles = StyleSheet.create({
     width: "100%",
     aspectRatio: 1,
     overflow: "hidden",
-    backgroundColor: "#121116",
+    backgroundColor: colors.coverBackground,
   },
   cover: { width: "100%", height: "100%" },
   coverFallback: {

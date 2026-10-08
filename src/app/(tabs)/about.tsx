@@ -1,40 +1,77 @@
-import React from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import React, { useState } from 'react';
+import { Image, Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { BrandHeader } from '../../components/BrandHeader';
-import { ScrollPage } from '../../components/Page';
-import { colors } from '../../theme';
+import { Page } from '../../components/Page';
+import { pagePadding, useThemeColors } from '../../theme';
+import { QuickGuide } from '../../components/QuickGuide';
+
+const WIKIPEDIA_URL = 'https://en.wikipedia.org/wiki/Bob_Dylan';
+const PRIVACY_POLICY_URL = 'https://www.tingmoarts.in/project/69ba5333fe16a2de07d805dd/privacy-policy';
 
 export default function AboutScreen() {
+  const [guideVisible, setGuideVisible] = useState(false);
+  const colors = useThemeColors();
+  const styles = createStyles(colors);
   return (
-    <ScrollPage>
-      <BrandHeader eyebrow="ABOUT THIS APP" />
-      <View style={styles.hero}>
-        <Image source={require('../../../assets/icon.png')} style={styles.icon} />
-        <Text style={styles.title}>A reader for the songs.</Text>
-        <Text style={styles.body}>Browse Bob Dylan albums, search songs, and keep a personal list of favourites.</Text>
+    <Page>
+      <View style={styles.fixedHeader}>
+        <BrandHeader eyebrow="ABOUT" />
       </View>
-      <View style={styles.quoteCard}>
-        <Text style={styles.quote}>“I consider myself a poet first and a musician second.”</Text>
-        <Text style={styles.attribution}>— Bob Dylan</Text>
+      <ScrollView style={styles.contentScroll} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+
+      <Text style={styles.title}>About Bob Dylan</Text>
+      <Pressable accessibilityRole="button" onPress={() => setGuideVisible(true)} style={styles.guideLink}>
+        <MaterialCommunityIcons name="help-circle-outline" size={19} color={colors.gold} />
+        <Text style={styles.guideLinkText}>How to use this app</Text>
+      </Pressable>
+      <Text style={styles.bio}>Bob Dylan arrived in New York in the 1960s with a guitar, a harmonica, and a knack for singing songs that sounded as if he’d already lived through a few generations. His folk, blues, and rock writing helped redraw the boundaries of popular song. He describes himself as a “song and dance man.”</Text>
+      <Text style={styles.bio}>The honors are almost a song list themselves: the Nobel Prize in Literature, an Oscar, 10 Grammy Awards plus the Recording Academy’s Lifetime Achievement Award, a Pulitzer Prize Special Citation, and the Presidential Medal of Freedom. Rolling Stone has ranked him No. 1 on its list of the greatest songwriters of all time.</Text>
+      <Pressable accessibilityRole="link" onPress={() => Linking.openURL(WIKIPEDIA_URL)} style={styles.wikiLink}>
+        <Text style={styles.wikiLinkText}>Read the full biography on Wikipedia</Text>
+        <MaterialCommunityIcons name="open-in-new" size={16} color={colors.gold} />
+      </Pressable>
+
+      <View style={styles.aboutApp}>
+        <Text style={styles.poweredBy}>Powered by</Text>
+        <Image source={require('../../../assets/tingmoarts-logo.png')} style={styles.logo} resizeMode="contain" />
+        <Text style={styles.brandName}><Text style={styles.brandTingmo}>tingmo</Text><Text style={styles.brandArts}>Arts</Text></Text>
+        <Text style={styles.body}>A personal passion project by TingmoArts, made as a songbook for Bob Dylan fans to browse and read the songs.</Text>
+        <Text style={styles.body}>The songs and lyrics are Bob Dylan’s work and remain the property of their respective rights holders.</Text>
+        <Pressable
+          accessibilityRole="link"
+          accessibilityLabel="Read the privacy policy"
+          onPress={() => Linking.openURL(PRIVACY_POLICY_URL)}
+          style={styles.privacyLink}
+        >
+          <Text style={styles.privacyLinkText}>Privacy Policy</Text>
+          <MaterialCommunityIcons name="open-in-new" size={16} color={colors.gold} />
+        </Pressable>
       </View>
-      <View style={styles.infoCard}>
-        <Text style={styles.cardTitle}>Made for offline reading</Text>
-        <Text style={styles.body}>The album catalogue and lyrics are included in the app, so you can read them without an internet connection. Favourites are saved on this device.</Text>
-      </View>
-      <Text style={styles.footer}>Bob Dylan Lyrics · 2026</Text>
-    </ScrollPage>
+      </ScrollView>
+      <QuickGuide visible={guideVisible} onClose={() => setGuideVisible(false)} />
+    </Page>
   );
 }
 
-const styles = StyleSheet.create({
-  hero: { alignItems: 'center', backgroundColor: colors.surface, borderRadius: 20, padding: 24, marginTop: 8 },
-  icon: { width: 100, height: 100, borderRadius: 24, marginBottom: 18 },
-  title: { color: colors.text, fontSize: 23, lineHeight: 29, fontWeight: '900', textAlign: 'center' },
+const createStyles = (colors: ReturnType<typeof useThemeColors>) => StyleSheet.create({
+  fixedHeader: { paddingHorizontal: pagePadding },
+  contentScroll: { flex: 1 },
+  content: { paddingHorizontal: pagePadding, paddingBottom: 32 },
+  title: { color: colors.text, fontSize: 22, fontWeight: '900', marginBottom: 12 },
+  guideLink: { flexDirection: 'row', alignItems: 'center', gap: 7, alignSelf: 'flex-start', marginTop: -5, marginBottom: 12, paddingVertical: 4 },
+  guideLinkText: { color: colors.gold, fontSize: 13, fontWeight: '800' },
+  bio: { color: colors.muted, fontSize: 14, lineHeight: 23, marginBottom: 12 },
+  albumTitle: { color: colors.text, fontStyle: 'italic', fontWeight: '700' },
+  wikiLink: { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 7, paddingVertical: 8, marginTop: 2, marginBottom: 8 },
+  wikiLinkText: { color: colors.gold, fontSize: 13, fontWeight: '800' },
+  aboutApp: { alignItems: 'center', marginTop: 24, paddingBottom: 8 },
+  poweredBy: { color: colors.muted, fontSize: 12, fontWeight: '700', letterSpacing: 1, marginBottom: 6 },
+  logo: { width: 124, height: 108 },
+  brandName: { fontSize: 16, fontWeight: '900', letterSpacing: 1.2, marginTop: 2 },
+  brandTingmo: { color: colors.text },
+  brandArts: { color: colors.brandAccent },
   body: { color: colors.muted, fontSize: 14, lineHeight: 22, textAlign: 'center', marginTop: 10 },
-  quoteCard: { borderRadius: 18, backgroundColor: '#2C2231', borderWidth: 1, borderColor: '#4B3653', padding: 22, marginTop: 16 },
-  quote: { color: colors.text, fontFamily: 'Georgia', fontSize: 19, lineHeight: 29, fontStyle: 'italic' },
-  attribution: { color: colors.gold, fontSize: 12, fontWeight: '800', textAlign: 'right', marginTop: 12 },
-  infoCard: { borderRadius: 18, backgroundColor: colors.surface, padding: 20, marginTop: 16 },
-  cardTitle: { color: colors.text, fontSize: 16, fontWeight: '800' },
-  footer: { color: colors.muted, textAlign: 'center', fontSize: 11, marginTop: 26, marginBottom: 8 },
+  privacyLink: { flexDirection: 'row', alignItems: 'center', gap: 7, paddingVertical: 12, marginTop: 8 },
+  privacyLinkText: { color: colors.gold, fontSize: 14, fontWeight: '800' },
 });
